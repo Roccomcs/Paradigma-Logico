@@ -1,0 +1,71 @@
+Hollow Knight: Silksong - Consigna
+
+Introducción
+Hollow Knight: Silksong es la entrega anunciada de la saga Hollow Knight. Para este parcial vamos a modelar en Prolog un pequeño dominio relacionado con la detección de desinformación en tweets sobre lanzamientos y sucesos alrededor del juego. La idea es crear predicados que permitan representar usuarios, tweets, interacciones (likes, dislikes, retweets), beneficios de cuentas, y un analizador heurístico (Grok) que evalúa la veracidad de un tweet palabra por palabra.
+
+Datos y convenciones
+- Cada tweet tiene un identificador único (átomo), un autor (username), un contenido (texto), y una fecha (date(Año,Mes,Día)). Sólo importan día/mes/año para búsquedas temporales.
+- Un tweet es válido si su contenido no supera los 140 caracteres.
+- Los usuarios tienen un username (único) y pueden tener beneficios: 'premium', 'administrador' o 'normal'.
+- Las interacciones posibles: likes, dislikes y retweets. Suponer que una persona no puede dar like/dislike múltiples veces al mismo tweet (no hace falta modelarlo), pero pueden hacer retweet.
+- Grok: existe un predicado en la base de conocimientos `gradoDeCerteza/2` que asigna a cada palabra un número entre 1 y 10 (entero). Grok analiza cada palabra del tweet, obtiene el grado de certeza y promedia. Clasificación por promedio:
+  - promedio >= 9 -> real
+  - 4 =< promedio < 9 -> dudoso
+  - promedio < 4 -> ficticio
+- Si el autor es un troll (ver definición más abajo) el tweet se considera siempre ficticio por Grok.
+
+Requerimientos a implementar (predicados principales)
+1) Modelar la base de conocimientos inicial
+   - Representar usuarios, tweets (con id, autor, fecha y contenido), likes, dislikes, retweets, y `gradoDeCerteza/2` para palabras de ejemplo.
+   - Representar beneficios: `beneficiario(Persona, Beneficio)` con beneficios `estudiantil`, `personalDeCasasParticulares(Zona)` y `jubilado`.
+   - Incluir al menos 8-12 hechos de ejemplo (usuarios, tweets y algunas interacciones) para permitir probar los predicados.
+
+2) `tweetValido/1`
+   - `tweetValido(Id)` es verdadero si el contenido del tweet con id `Id` tiene <= 140 caracteres.
+   - Debe ser inversible en `Id`.
+
+3) `ratio/2`
+   - `ratio(Id, Diferencia)` donde Diferencia = (#likes) - (#dislikes) que haya recibido el tweet `Id`.
+   - Implementar contando las interacciones registradas (si usás hechos `leDioLike/2` y `leDioDislike/2`, contar con `findall` + `length`).
+   - Debe ser inversible en `Id` y en `Diferencia` cuando sea posible.
+
+4) `esTroll/1`
+   - Un usuario es troll si cumple alguna de las dos condiciones:
+     a) "solo postea ragebait": el usuario es `premium` y todas sus publicaciones son preguntas (terminan en '?').
+     b) "solo postea hechos": el usuario no es `administrador` y todos sus tweets son inválidos (`tweetValido/1` falso) y además tienen ratio negativo.
+   - Usar `forall/2` para las condiciones universales; garantizar que el predicado sea inversible y que no dé verdad vacía para usuarios sin tweets.
+
+5) `estanEntongados/2`
+   - `estanEntongados(U1, U2)` verdadero si U1 y U2 son trolls, se siguen mutuamente y cada uno le dio like a todos los tweets del otro.
+   - Debe ser inversible y evitar duplicados (p. ej. devolver sólo pares con U1 @< U2 si querés evitar (A,B) y (B,A)).
+
+6) `grokEstoEsPosta/2`
+   - `grokEstoEsPosta(Contenido, Clasificacion)` clasifica el `Contenido` (o trabajar por `Id` usando `tweet/4`): si el autor es troll -> `ficticio`.
+   - Si no es troll: descomponer el contenido en palabras, para cada palabra obtener `gradoDeCerteza/2`, promediar (sum_list + length) y clasificar según umbrales (>=9 real, 4..8 dudoso, <4 ficticio).
+   - Evitar división por cero (fallar si no hay palabras con grado) o decidir un comportamiento por defecto.
+
+7) `resultadoDeBusqueda/3`
+   - `resultadoDeBusqueda(Usuario, Condicion, Ids)` devuelve la lista de `Ids` (tweets que el usuario escribió o retwitteó) que cumplen la `Condicion`.
+   - Condiciones posibles (modelar como términos): `antesDe(Fecha)`, `despuesDe(Fecha)`, `conRatioNegativo`, `combinada(C1,C2)` aplicando ambas, y cualquier otra que desees.
+   - Debe ser inversible en Usuario y en la lista resultante; implementar versión con `findall` que recoja los `Ids` y use `sort/2` para eliminar duplicados.
+
+Requisitos de estilo y pruebas
+- Todos los predicados principales deben ser inversibles en los argumentos esperados.
+- Evitar verdad vacía en predicados universales (usar un generador previo que garantice existencia de elementos si corresponde).
+- Añadir ejemplos de consultas que prueben cada predicado (comentadas) al final del archivo.
+
+Entrega
+- Generar un archivo `parcialHollowKnightSilksong.txt` en la carpeta `ParcialSilksong/` (texto plano) con esta consigna y ejemplos de uso claros.
+- Opcional: si querés, crear un `.pl` de ejemplo con hechos y predicados mínimos para probar (pregunta si querés que lo haga).
+
+---
+
+Ejemplo de consultas que deberían funcionar con la KB de ejemplo
+?- tweetValido(Id).
+?- ratio(t3, D).
+?- esTroll(Usuario).
+?- estanEntongados(a,b).
+?- grokEstoEsPosta("Hollow Knight sale mañana?", Clas).
+?- resultadoDeBusqueda(juan, antesDe(date(2023,11,1)), Ids).
+
+Fin de la consigna

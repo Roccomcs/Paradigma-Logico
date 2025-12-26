@@ -1,0 +1,50 @@
+Un grupo de escritoras de una saga de libros muy conocida nos contactó para que las ayudemos a armar un sistema que les permita tener conocimiento sobre los gatos y los sucesos que participan en sus libros. Y… ¿cómo podíamos decir que no? ¡Son gatitos! 😻
+Si bien nos adelantamos un poquito y ya armamos una base de conocimientos, utilizá todo lo que sepas del paradigma lógico y Prolog para cumplir los requerimientos de las escritoras.
+A continuación te dejamos una reducción de la base de conocimientos:
+
+
+% pertenece(Gato, Clan)
+pertenece(estrellaDeFuego, clanDelTrueno).
+pertenece(estrellaAzul, clanDelTrueno).
+pertenece(tormentaDeArena, clanDelTrueno).
+
+% gato(Gato, EdadEnLunas, EnemigosALosQueVenció)
+gato(estrellaDeFuego, 6, [estrellaRota, patasNegras, corazonDeRoble]).
+
+% esDe(Clan, Zona)
+esDe(clanDelTrueno, granSicomoro).
+esDe(clanDelTrueno, rocasDeLasSerpientes).
+esDe(clanDelTrueno, hondonadaArenosa).
+esDe(clanDelViento, cuatroArboles).
+esDe(clanDelRio, rocasSoleadas).
+esDe(clanDeLaSombra, vertedero).
+
+% patrulla(Gato, Zona)
+patrulla(estrellaDeFuego, rocasSoleadas).
+patrulla(tormentaDeArena, cuatroArboles).
+
+% Posibles presas de los gatos:
+% ave(TipoDeAve, AltitudDeVuelo)
+% pez(OceanoDondeVive)
+% rata(Nombre, Profesión, Altura)
+
+% seEncuentra(Presa, Zona)
+seEncuentra(ave(paloma, 5), cuatroArboles).
+seEncuentra(ave(quetzal, 15), rocasDeLasSerpientes).
+seEncuentra(pez(atlantico), granSicomoro).
+seEncuentra(rata(ratatouille, cocinero, 15), cocinaParisina).
+seEncuentra(rata(pinky, cientifico, 22), laboratorio).
+
+A partir de lo anterior, se piden modelar los siguientes predicados de forma tal que sean totalmente inversibles:
+
+esTraidor/1: Un gato es un traidor si alguno de los gatos a los que se enfrentó es de su mismo clan.
+sePuedenEnfrentar/2: Dos gatos se pueden enfrentar si son de distintos clanes y patrullan la misma zona.
+esConcurrida/1: Una zona es concurrida si es patrullada por más de 5 gatos o si la zona es Cuatro Árboles.
+esMiedoso/1: Un gato es miedoso cuando solo patrulla zonas que le pertenecen a su clan.
+esTravieso/1: Un gato es travieso si todas las zonas que patrulla son concurridas o si tiene menos de 6 lunas de edad o es Estrella De Fuego.
+puedeAtrapar/2: un gato puede atrapar una presa si éste no es miedoso y además la presa:
+es un ave que vuela a menos de 10 metros del piso o es una paloma.
+es una rata cocinera llamada Ratatouille que mide 15 cm.
+Los peces nunca pueden ser atrapados.
+experiencia/2: La experiencia de un gato es la cantidad de enemigos derrotados por su edad gatuna. 
+ganaUnEnfrentamiento/2: Un gato ganó un enfrentamiento a otro gato cuando el primero venció más enemigos que el segundo.

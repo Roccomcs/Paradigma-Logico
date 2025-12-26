@@ -1,5 +1,5 @@
 % Recorridos en GBA:
-%recorrido(Linea,Zona,Barrio)
+%recorrido(Linea,Zona,Barrio).
 recorrido(17, gba(sur), mitre).
 recorrido(24, gba(sur), belgrano).
 recorrido(247, gba(sur), onsari).
@@ -7,7 +7,7 @@ recorrido(60, gba(norte), maipu).
 recorrido(152, gba(norte), olivos).
 
 % Recorridos en CABA:
-%recorrido(Linea,Zona,Calle)
+%recorrido(Linea,Zona,Calle).
 recorrido(17, caba, santaFe).
 recorrido(152, caba, santaFe).
 recorrido(10, caba, santaFe).
@@ -38,28 +38,33 @@ jurisdiccion(Linea,provincial(Provincia)):-
     perteneceA(Zona,Provincia),
     not(cruzaGralPaz(Linea)).
 
+jurisdiccion(Linea,provincial(caba)):-  
+    not(cruzaGralPaz(Linea)),
+    recorrido(Linea, caba, _).   
+
 perteneceA(caba, caba).
 perteneceA(gba(_), buenosAires).
 
 % 3. Saber cuál es la calle más transitada de una zona, que es por la que pasen mayor cantidad de líneas.
 
 calleMasTransitada(Calle,Zona):-
+    recorrido(_,Zona,Calle),
     cuantasLineasPasan(Calle,Zona,Cantidad),
-    forall(recorrido(_,Zona,OtraCalle), Calle \= OtraCalle), cuantasLineasPasan(OtraCalle,Zona,CantidadMenor), 
-    Cantidad > CantidadMenor.
+    forall((recorrido(_,Zona,OtraCalle), Calle \= OtraCalle), (cuantasLineasPasan(OtraCalle,Zona,CantidadMenor), Cantidad > CantidadMenor)).
 
 cuantasLineasPasan(Calle,Zona,Cantidad):-
-    recorrido(_,Zona,Calle),
-    findall(Calle,recorrido(_,Zona,Calle),ListaDeCalles),
-    length(ListaDeCalles,Cantidad).
+    findall(Linea,recorrido(Linea,Zona,Calle),ListaDeLineas),
+    sort(ListaDeLineas, LineasUnicas), 
+    length(LineasUnicas,Cantidad).
     
 % 4. Saber cuáles son las calles de transbordos en una zona, que son aquellas por las que pasan al menos 3 líneas de colectivos, y todas son de jurisdicción nacional.
 
 callesDeTransbordos(Calle,Zona):-
     recorrido(_,Zona,Calle),
-    forall(recorrido(Linea,Zona,Calle),jurisdiccion(Linea,nacional)).
     cuantasLineasPasan(Calle,Zona,Cantidad),
     Cantidad >= 3,
+    forall(recorrido(Linea,Zona,Calle),jurisdiccion(Linea,nacional)).
+    
 
 % 5. Necesitamos incorporar a la base de conocimientos cuáles son los beneficios que las personas tienen asociadas a sus tarjetas registradas en el sistema SUBE. 
 % Dichos beneficios pueden ser cualquiera de los siguientes:
@@ -118,16 +123,20 @@ valorNormal(Linea, 350):-
 
 valorNormal(Linea, Valor):-
     jurisdiccion(Linea, provincial(buenosAires)),
-    findall(Calle, recorrido(Linea, _, Calle), Calles),
-    length(Calles, CantidadCalles),
+    cantidadDeCalles(Linea,Cantidad),
     plus(Linea, Plus),
-    Valor is (25*CantidadCalles) + Plus.
+    Valor is 25 * Cantidad + Plus.
 
 plus(Linea,50):-
     pasaPorDiferentesZonas(Linea).
 
 plus(Linea,0):-
     not(pasaPorDiferentesZonas(Linea)).
+
+cantidadDeCalles(Linea,Cantidad):-
+    findall(Calle, recorrido(Linea, _, Calle), ListaDeCalles),
+    sort(ListaDeCalles, CallesUnicas), 
+    length(CallesUnicas, Cantidad).
 
 pasaPorDiferentesZonas(Linea):-
     recorrido(Linea,gba(Zona),_),

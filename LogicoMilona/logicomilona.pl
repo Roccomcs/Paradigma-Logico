@@ -21,7 +21,7 @@ elabora(ale, hamburguesa).
 elabora(lu, sushi).
 elabora(mar, padThai).
 
-% cocinaEn(Restaurante,Chef).
+%cocinaEn(Restaurante,Chef).
 cocinaEn(pinpun, guille).
 cocinaEn(laPececita, vale).
 cocinaEn(laParolacha, vale).
@@ -42,11 +42,11 @@ tieneEstilo(guendis, comidaRapida(5)).
 
 
 % Posibles estilos
-% italiano(CantidadDePastas).
-% oriental(Pais).
-% bodegon(Barrio,PrecioPromedio).
-% mexicano(variedadDeAjies).
-% comidaRapida(CantidadDeCombos).
+italiano(CantidadDePastas).
+oriental(Pais).
+bodegon(Barrio,PrecioPromedio).
+mexicano(variedadDeAjies).
+comidaRapida(CantidadDeCombos).
 
 % 1 esCrack/1: un o una chef es crack si trabaja en por lo menos dos restaurantes o cocina pad thai.
 

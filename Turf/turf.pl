@@ -106,8 +106,64 @@ sonPiolines(Nombre):-
     forall(ganoPremioImportante(Caballo),prefiere(Caballo,Nombre)).
 
 ganoPremioImportante(Caballo):-
-    gano(Caballo,granPremioNacional).
+    gano(Caballo,Premio),
+    premioImportante(Premio).
 
-ganoPremioImportante(Caballo):-
-    gano(Caballo,granPremioRepublica).
+premioImportante(granPremioNacional).
+premioImportante(granPremioRepublica).
 
+
+% Punto 5: El jugador
+% Apuestas (2 puntos)
+% Queremos registrar las apuestas que hacen ciertas personas, una persona puede apostar 
+% a ganador por un caballo => gana si el caballo resulta ganador
+% a segundo por un caballo => gana si el caballo sale primero o segundo
+% exacta => apuesta por dos caballos, y gana si el primer caballo sale primero y el segundo caballo sale segundo
+% imperfecta => apuesta por dos caballos y gana si los caballos terminan primero y segundo sin importar el orden
+% Queremos saber, dada una apuesta y el resultado de una carrera de caballos si la apuesta resultó ganadora.
+% El predicado no debe ser inversible.
+ganadora(ganador(Caballo), Resultado):-salioPrimero(Caballo, Resultado).
+ganadora(segundo(Caballo), Resultado):-salioPrimero(Caballo, Resultado).
+ganadora(segundo(Caballo), Resultado):-salioSegundo(Caballo, Resultado).
+ganadora(exacta(Caballo1, Caballo2),Resultado):-salioPrimero(Caballo1, Resultado), salioSegundo(Caballo2, Resultado).
+ganadora(imperfecta(Caballo1, Caballo2),Resultado):-salioPrimero(Caballo1, Resultado), salioSegundo(Caballo2, Resultado).
+ganadora(imperfecta(Caballo1, Caballo2),Resultado):-salioPrimero(Caballo2, Resultado), salioSegundo(Caballo1, Resultado).
+
+salioPrimero(Caballo, [Caballo|_]).
+salioSegundo(Caballo, [_|[Caballo|_]]).
+
+% Punto 6: Los colores
+% Sabiendo que cada caballo tiene un color de crin:
+% - Botafogo es tordo (negro)
+% - Old Man es alazán (marrón)
+% - Enérgica es ratonero (gris y negro) 
+% - Mat Boy es palomino (marrón y blanco)
+% - Yatasto es pinto (blanco y marrón)
+% queremos saber qué caballos podría comprar una persona que tiene preferencia
+% por caballos de un color específico. Tiene que poder comprar por lo menos un caballo para que
+% la solución sea válida.
+%
+% Esperamos que no haya una única solución, sino que se pueda conocer todas las alternativas válidas posibles.
+crin(botafogo, tordo).
+crin(oldMan, alazan).
+crin(energica, ratonero).
+crin(matBoy, palomino).
+crin(yatasto, pinto).
+
+color(tordo, negro).
+color(alazan, marron).
+color(ratonero, gris).
+color(ratonero, negro).
+color(palomino, marron).
+color(palomino, blanco).
+color(pinto, blanco).
+color(pinto, marron).
+
+comprar(Color, Caballos):-
+  findall(Caballo, (crin(Caballo, Crin), color(Crin, Color)), CaballosPosibles),
+  combinar(CaballosPosibles, Caballos),
+  Caballos \= [].
+
+combinar([], []).
+combinar([Caballo|CaballosPosibles], [Caballo|Caballos]):-combinar(CaballosPosibles, Caballos).
+combinar([_|CaballosPosibles], Caballos):-combinar(CaballosPosibles, Caballos).

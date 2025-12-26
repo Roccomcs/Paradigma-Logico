@@ -1,0 +1,71 @@
+Improlog
+Un grupo de músicos entusiastas del jazz nos contactó para que construyamos un sistema que les permita organizarse para armar grupos con los que puedan juntarse a tocar.
+
+Sabemos que hay distintos tipos de grupos de jazz que se diferencian bastante entre sí por ser más o menos exigentes a la hora de seleccionar a sus integrantes, y también en base al tipo de instrumentos que necesitan para que suenen como tienen que sonar.
+
+Por ejemplo, las big bands son grupos conformados mayormente por muchos instrumentos de viento y rara vez necesitan improvisar, pero otros tipos de grupos de jazz cuentan con que sus integrantes puedan tocar libremente un solo improvisado lo cual tiene su complejidad...
+
+Tenemos una base de conocimientos con los siguientes predicados como punto de partida:
+integrante/3 relaciona a un grupo, con una persona que toca en ese grupo y el instrumento que toca en ese grupo.
+nivelQueTiene/3 relaciona a una persona con un instrumento que toca y qué tan bien puede improvisar con dicho instrumento (que representaremos con un número del 1 al 5).
+instrumento/2 que relaciona el nombre de un instrumento con el rol que cumple el mismo al tocar en un grupo. Todos los instrumentos se considerarán rítmicos, armónicos o melódicos. Para los melódicos se incluye información adicional del tipo de instrumento (si es de cuerdas, viento, etc).
+
+A continuación se muestra una base de conocimientos de ejemplo:
+integrante(sophieTrio, sophie, violin).
+integrante(sophieTrio, santi, guitarra).
+integrante(vientosDelEste, lisa, saxo).
+integrante(vientosDelEste, santi, voz).
+integrante(vientosDelEste, santi,
+  guitarra).
+integrante(jazzmin, santi, bateria).
+
+nivelQueTiene(sophie, violin, 5).
+nivelQueTiene(santi, guitarra, 2).
+nivelQueTiene(santi, voz, 3).
+nivelQueTiene(santi, bateria, 4).
+nivelQueTiene(lisa, saxo, 4).
+nivelQueTiene(lore, violin, 4).
+nivelQueTiene(luis, trompeta, 1).
+nivelQueTiene(luis, contrabajo, 4).
+
+instrumento(violin, melodico(cuerdas)).
+instrumento(guitarra, armonico).
+instrumento(bateria, ritmico).
+instrumento(saxo, melodico(viento)).
+instrumento(trompeta, melodico(viento)).
+instrumento(contrabajo, armonico).
+instrumento(bajo, armonico).
+instrumento(piano, armonico).
+instrumento(pandereta, ritmico).
+instrumento(voz, melodico(vocal)).
+
+
+Resolver los siguientes requerimientos aprovechando las ideas del paradigma lógico. Asegurar que todos los predicados principales sean inversibles.
+
+Saber si un grupo tiene una buena base, que sucede si hay algún integrante de ese grupo que toque un instrumento rítmico y alguien más que toque un instrumento armónico.
+Saber si una persona se destaca en un grupo, que se cumple si el nivel con el que toca un instrumento en el grupo en cuestión es al menos dos puntos más del nivel con el que tocan sus instrumentos todos los demás integrantes.
+Con los datos actuales, sophie se destacaría en sophieTrio y nadie en vientosDelEste.
+Incorporar a la base de conocimientos la información sobre los distintos grupos que se están armando mediante un predicado grupo/2 que relacione a un grupo con el tipo de grupo en cuestión. En principio cada grupo puede ser una big band o requerir una formación particular (para las cuales se indicará a su vez cuáles son los instrumentos que requiere para estar completo).
+El grupo vientosDelEste es una big band.
+El grupo sophieTrio tiene una formación de contrabajo, guitarra y violín.
+El grupo jazzmin también tiene una formación particular, en este caso de batería, bajo, trompeta, piano y guitarra.
+Sabemos que habrán otros tipos de grupos a considerar más adelante, por lo que la solución propuesta para los requerimientos posteriores debería poder extenderse fácilmente en estos términos.
+Saber si hay cupo para un instrumento en un grupo.
+En particular, para los grupos de tipo big band siempre hay cupo para los instrumentos melódicos de viento.
+Por otro lado, independientemente del tipo de grupo del que se trate, normalmente se cumple que hay cupo para un instrumento si no hay alguien que ya toque ese mismo instrumento en el grupo, y además el instrumento sirve para el tipo de grupo en cuestión.
+
+Respecto a qué instrumentos sirven:
+si se trata de una formación particular, sirve si es un instrumento de los que se buscaban para esa formación,
+para las big bands, además de los instrumentos de viento, sirven la batería, el bajo y el piano.
+Saber si una persona puede incorporarse a un grupo y con qué instrumento, que se verifique si la persona no forma parte ya de dicho grupo, además hay cupo para ese instrumento y el nivel que tiene la persona con ese instrumento es mayor o igual al mínimo esperado para el grupo.
+
+Si se trata de una big band el nivel mínimo es 1, y si se trata de una formación particular será 7 - la cantidad de instrumentos buscados para esa formación.
+Saber si una persona se quedó en banda, que se cumple si no forma parte de un grupo y no hay ningún grupo al que pueda incorporarse.
+Saber si un grupo puede tocar, que se cumple si con los integrantes que tocan algún instrumento en ese grupo logran cubrir las necesidades mínimas que tienen, considerando que...
+Si se trata de una big band hace falta tener una buena base y por lo menos 5 personas que toquen instrumentos de viento.
+Si es una formación particular, debería cumplirse que para todos los instrumentos requeridos tienen alguien en el grupo que lo toque.
+Finalmente queremos incorporar a nuestra base de conocimientos grupos de otro tipo de los que ya tenemos: los ensambles.
+Para cada ensamble deberá informarse cuál es el nivel mínimo que tiene que tener una persona con su instrumento para poder incorporarse al grupo correspondiente.
+Además sabemos que para los ensambles cualquier instrumento sirve, y para que puedan tocar hace falta una buena base y al menos alguna persona que toque un instrumento melódico sin importar de qué tipo.
+
+Agregar a la base de conocimientos al grupo estudio1 que es un ensamble que requiere tener un nivel con el instrumento de al menos 3 para poder incorporarse, y adaptar la lógica desarrollada en los puntos anteriores para que funcionen correctamente con los ensambles.

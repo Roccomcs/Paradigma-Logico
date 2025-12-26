@@ -51,7 +51,7 @@ tieneBuenaBase(Grupo):-
     Nombre \= OtroNombre.
 
 tocaInstrumentoTipo(Grupo,Nombre,Rol):-
-    integrante(Grupo,_,Instrumento),
+    integrante(Grupo,Nombre,Instrumento),
     instrumento(Instrumento,Rol).
 
 /*
@@ -161,7 +161,7 @@ parte de un grupo y no hay ningún grupo al que pueda incorporarse.
 seQuedoEnBanda(Persona):-
     nivelQueTiene(Persona, _,_),
     not(integrante(_, Persona, _)),
-    not(puedeIncorporarse(_, Persona, _)).
+    not(puedeIncorporarse(Persona, _, _)).
 
 /*
 Saber si un grupo puede tocar, que se cumple si con los integrantes que tocan algún 
@@ -182,11 +182,11 @@ cumplenNecesidadesMinimas(Grupo,bigBand):-
     Cantidad >= 5.
 
 instrumentosDeViento(Grupo,Cantidad):-
-    findall(Nombre,integrante(Grupo, Nombre, melodico(viento)),PersonasQueTocanViento),
+    findall(Nombre,(integrante(Grupo, Nombre, Instrumento),instrumento(Instrumento,melodico(viento))),PersonasQueTocanViento),
     length(PersonasQueTocanViento, Cantidad).
     
 cumplenNecesidadesMinimas(Grupo,formacion(Instrumentos)):-
-    forall(member(Instrumento,Instrumentos), integrante(_,Grupo,Instrumento)).
+    forall(member(Instrumento,Instrumentos), integrante(Grupo,_,Instrumento)).
     
 /*
 Finalmente queremos incorporar a nuestra base de conocimientos grupos de otro tipo de los que ya tenemos: los ensambles.
